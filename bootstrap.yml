@@ -10,8 +10,8 @@ argocd:
     namespace: argocd
   project: default
   source:
-    path: argocd/vault
-    repoURL: https://github.com/starburstdata/techops-vault.git
+    path: bootstrap.yaml
+    repoURL: https://github.com/bchuntley/argo-template.git
     targetRevision: HEAD
 
   helm:
