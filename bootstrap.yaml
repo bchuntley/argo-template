@@ -1,0 +1,28 @@
+cluster:
+  name: minikube
+  region: us-east-2
+  hostedZoneId: someHostedZoneID
+
+argocd:
+  name: vault
+  dest:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  project: default
+  source:
+    path: bootstrap.yaml
+    repoURL: https://github.com/bchuntley/argo-template.git
+    targetRevision: HEAD
+
+  helm:
+    apps:
+      autoscaler:
+        name: autoscaler
+        targetRevision: 1.0.0
+        chart: autoscaler
+        namespace: kube-system
+      kubed:
+        name: kubed
+        targetRevision: 3.0.0
+        chart: kubed
+        namespace: kube-system
