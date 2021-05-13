@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubed
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  project: default
+  source:
+    chart: kubed
+    helm:
+      values: |
+        config:
+          clusterName: minikube
+        enableAnalytics: false
+        imagePullSecrets:
+        - name: dockercredentials
+        operator:
+          registry: harbor.starburstdata.net/starburstdata
+          repository: kubed
+          tag: v0.13.0-beta.0-44-gd24bd079_linux_amd64
+
+    repoURL: https://github.com/bchuntley/argo-template.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

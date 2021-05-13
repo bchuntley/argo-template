@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autoscaler
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  project: default
+  source:
+    chart: autoscaler
+    helm:
+      values: |
+        autoDiscovery:
+          clusterName: minikube
+          tags:
+          - k8s.io/cluster-autoscaler/enabled
+          - k8s.io/cluster-autoscaler/minikube
+        autoscaler:
+          image:
+            pullSecrets:
+            - name: dockercredentials
+            repository: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler
+            tag: v1.18.3
+        awsRegion: us-east-2
+        cloudProvider: aws
+        extraArgs:
+          balance-similar-node-groups: "true"
+          expander: least-waste
+          skip-nodes-with-local-storage: "false"
+          skip-nodes-with-system-pods: "false"
+        myvalue: autoscaler
+        priorityClassName: node-autoscaler
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        service:
+          labels:
+            app: node-autoscaler
+
+    repoURL: https://github.com/bchuntley/argo-template.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
